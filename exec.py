@@ -22,6 +22,7 @@ __cwd__ = xbmc.translatePath( __addon__.getAddonInfo('path') ).decode('utf-8')
 __profile__ = xbmc.translatePath( __addon__.getAddonInfo('profile') ).decode('utf-8')
 __resource__ = xbmc.translatePath( os.path.join( __cwd__, 'resources', 'lib' ) ).decode('utf-8')
 __icon_msg__ = xbmc.translatePath( os.path.join( __cwd__, 'resources', 'bulsat.png' ) ).decode('utf-8')
+excluded_ids_file = xbmc.translatePath( os.path.join( __cwd__, 'excluded_ids.txt' ) ).decode('utf-8')
 __data__ = xbmc.translatePath(os.path.join( __profile__, '', 'dat') ).decode('utf-8')
 __r_path__ = xbmc.translatePath(__addon__.getSetting('w_path')).decode('utf-8')
 sys.path.insert(0, __resource__)
@@ -57,7 +58,7 @@ def update(name, dat, crash=None):
   payload['ea'] = 'tv_service'
   payload['ev'] = '1'
   payload['dl'] = urllib.quote_plus(dat.encode('utf-8'))
-  ga().update(payload, crash)
+  #ga().update(payload, crash)
 
 __ua_os = {
   '0' : {'ua' : 'pcweb', 'osid' : 'pcweb'},
@@ -120,6 +121,17 @@ def dbg_msg(msg):
 import traceback
 try:
   import bsc
+
+  #Load IDs to be excluded
+  try:
+    with open(excluded_ids_file) as f:
+      xbmc.log("Excluded ids file: %s" % excluded_ids_file)
+      excluded_ids = f.read().splitlines()
+      xbmc.log("%s channels will be removed" % len(excluded_ids))
+  except Exception, e:
+    xbmc.log(str(e))
+    excluded_ids = []
+
   b = bsc.dodat(base = __addon__.getSetting('base'),
                 login = {'usr': __addon__.getSetting('username'),
                         'pass': __addon__.getSetting('password')
@@ -138,7 +150,8 @@ try:
                 gen_epg = not etx_epg,
                 compress = True,
                 map_url = map_url,
-                proc_cb = progress_cb)
+                proc_cb = progress_cb,
+                excluded_ids = excluded_ids)
 
   if check_plg():
     force = True
@@ -173,6 +186,7 @@ try:
       if __addon__.getSetting('en_reload_pvr')== 'true':
         dbg_msg('Reload PVR')
         update('reload_pvr', __ua_os[__addon__.getSetting('dev_id')]['osid'])
+        xbmc.executebuiltin('XBMC.StopPVRManager')
         xbmc.executebuiltin('XBMC.StartPVRManager')
 
 except Exception, e:
