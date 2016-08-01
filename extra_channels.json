@@ -1,0 +1,6 @@
+{"channels":
+  [
+    {"id":"Match1", "name":"Матч", "group":"Спортни", "logo":"http://toplogos.ru/logo-match-tv/][img]http://toplogos.ru/images/thumbs/preview-logo-match-tv.png", "playpath":"http://www.sport24.pw/hls/MatchTV.m3u8"},
+    {"id":"Match2", "name":"Матч", "group":"Спортни", "logo":"http://toplogos.ru/logo-match-tv/][img]http://toplogos.ru/images/thumbs/preview-logo-match-tv.png", "playpath":"http://176.112.96.17:8000/play/a003"}
+  ]
+}

@@ -23,6 +23,7 @@ __profile__ = xbmc.translatePath( __addon__.getAddonInfo('profile') ).decode('ut
 __resource__ = xbmc.translatePath( os.path.join( __cwd__, 'resources', 'lib' ) ).decode('utf-8')
 __icon_msg__ = xbmc.translatePath( os.path.join( __cwd__, 'resources', 'bulsat.png' ) ).decode('utf-8')
 excluded_ids_file = xbmc.translatePath( os.path.join( __cwd__, 'excluded_ids.txt' ) ).decode('utf-8')
+extra_channels_file = xbmc.translatePath( os.path.join( __cwd__, 'extra_channels.json' ) ).decode('utf-8')
 __data__ = xbmc.translatePath(os.path.join( __profile__, '', 'dat') ).decode('utf-8')
 __r_path__ = xbmc.translatePath(__addon__.getSetting('w_path')).decode('utf-8')
 sys.path.insert(0, __resource__)
@@ -131,6 +132,16 @@ try:
   except Exception, e:
     xbmc.log(str(e))
     excluded_ids = []
+    
+  try:
+    with open(extra_channels_file) as f:
+      xbmc.log("Including channels from file: %s" % extra_channels_file)
+      js = json.load(f)
+      extra_channels = js['channels']
+      xbmc.log("%s extra channels will be added" % len(extra_channels))
+  except Exception, e:
+    xbmc.log(str(e))
+    extra_channels = []
 
   b = bsc.dodat(base = __addon__.getSetting('base'),
                 login = {'usr': __addon__.getSetting('username'),
@@ -151,7 +162,8 @@ try:
                 compress = True,
                 map_url = map_url,
                 proc_cb = progress_cb,
-                excluded_ids = excluded_ids)
+                excluded_ids = excluded_ids,
+                extra_channels = extra_channels)
 
   if check_plg():
     force = True
