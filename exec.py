@@ -22,7 +22,9 @@ __cwd__ = xbmc.translatePath( __addon__.getAddonInfo('path') ).decode('utf-8')
 __profile__ = xbmc.translatePath( __addon__.getAddonInfo('profile') ).decode('utf-8')
 __resource__ = xbmc.translatePath( os.path.join( __cwd__, 'resources', 'lib' ) ).decode('utf-8')
 __icon_msg__ = xbmc.translatePath( os.path.join( __cwd__, 'resources', 'bulsat.png' ) ).decode('utf-8')
-excluded_ids_file = xbmc.translatePath( os.path.join( __cwd__, 'excluded_ids.txt' ) ).decode('utf-8')
+#excluded_ids_file = xbmc.translatePath( os.path.join( __cwd__, 'excluded_ids.txt' ) ).decode('utf-8')
+excluded_ids_file = xbmc.translatePath(__addon__.getSetting('excluded_ids_file')).decode('utf-8')
+additional_m3u_file = xbmc.translatePath(__addon__.getSetting('additional_m3u_file')).decode('utf-8')
 extra_channels_file = xbmc.translatePath( os.path.join( __cwd__, 'extra_channels.json' ) ).decode('utf-8')
 __data__ = xbmc.translatePath(os.path.join( __profile__, '', 'dat') ).decode('utf-8')
 __r_path__ = xbmc.translatePath(__addon__.getSetting('w_path')).decode('utf-8')
@@ -134,14 +136,12 @@ try:
     excluded_ids = []
     
   try:
-    with open(extra_channels_file) as f:
-      xbmc.log("Including channels from file: %s" % extra_channels_file)
-      js = json.load(f)
-      extra_channels = js['channels']
-      xbmc.log("%s extra channels will be added" % len(extra_channels))
+    with open(additional_m3u_file) as f:
+      append_m3u = unicode(f.read(), 'utf-8')
+      xbmc.log("Including channels from file: %s" % additional_m3u_file)
   except Exception, e:
     xbmc.log(str(e))
-    extra_channels = []
+    append_m3u = ''
 
   b = bsc.dodat(base = __addon__.getSetting('base'),
                 login = {'usr': __addon__.getSetting('username'),
@@ -163,7 +163,7 @@ try:
                 map_url = map_url,
                 proc_cb = progress_cb,
                 excluded_ids = excluded_ids,
-                extra_channels = extra_channels)
+                append_m3u = append_m3u)
 
   if check_plg():
     force = True

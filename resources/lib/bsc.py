@@ -32,7 +32,7 @@ class dodat():
                 map_url = None,
                 proc_cb = None,
                 excluded_ids = None,
-                extra_channels = None):
+                append_m3u = None):
 
     self.__UA = {
                 'Host': 'api.iptv.bulsat.com',
@@ -76,7 +76,7 @@ class dodat():
     self.__MAP_URL = map_url
     self.__gen_jd = False
     self.excluded_ids = excluded_ids
-    self.extra_channels = extra_channels
+    self.append_m3u = append_m3u
 
     self.__s = requests.Session()
 
@@ -326,10 +326,13 @@ class dodat():
               pl = pl + '#EXTINF:-1 radio="%s" tvg-shift=%s group-title="%s" tvg-logo="%s" tvg-id="%s",%s\n%s|User-Agent=%s\n' % (ch['radio'], offset, ch_group_name, logo, gid, ch['title'], ch['sources'], ua)
 
       #Add extra channels  
-      if self.extra_channels:
-        for c in self.extra_channels:
-          pl = pl + '#EXTINF:-1 radio="False" tvg-shift=0 group-title="%s" tvg-logo="%s" tvg-id="%s",%s\n%s|User-Agent=%s\n' % (c['group'], c['logo'], c['id'], c['name'], c['playpath'], ua)
+      #if self.extra_channels:
+      #  for c in self.extra_channels:
+      #    pl = pl + '#EXTINF:-1 radio="False" tvg-shift=0 group-title="%s" tvg-logo="%s" tvg-id="%s",%s\n%s|User-Agent=%s\n' % (c['group'], c['logo'], c['id'], c['name'], c['playpath'], ua)
 
+      if self.append_m3u:
+        pl = pl + self.append_m3u
+      
         if self.__gen_jd:
           jdump[ch['epg_name']]=ch['epg_name']
 
