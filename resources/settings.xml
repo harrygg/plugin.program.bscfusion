@@ -27,6 +27,8 @@
       <setting label="30502" type="bool"   id="en_reload_pvr" default="true"/>
       <setting label="30503" type="bool"   id="ext_epg" default="true"/>
       <setting label="30504" type="text"   id="map_dat" default="http://snip.li/epgmap" visible="eq(-1,true)"/>
+    </category>
+    <category label="Dop">
       <setting label="Добави друг плейлист" type="bool"   id="en_add" default="false"/>
       <setting label="Път до m3u плейлист" type="file" id="additional_m3u_file" default="" option="writeable" visible="eq(-1,true)"/>
       <setting label="Премахни дадени канали" type="bool"   id="en_exclude" default="false"/>

@@ -22,10 +22,11 @@ __cwd__ = xbmc.translatePath( __addon__.getAddonInfo('path') ).decode('utf-8')
 __profile__ = xbmc.translatePath( __addon__.getAddonInfo('profile') ).decode('utf-8')
 __resource__ = xbmc.translatePath( os.path.join( __cwd__, 'resources', 'lib' ) ).decode('utf-8')
 __icon_msg__ = xbmc.translatePath( os.path.join( __cwd__, 'resources', 'bulsat.png' ) ).decode('utf-8')
-#excluded_ids_file = xbmc.translatePath( os.path.join( __cwd__, 'excluded_ids.txt' ) ).decode('utf-8')
+en_exclude = xbmc.translatePath(__addon__.getSetting('en_exclude')).decode('utf-8')
 excluded_ids_file = xbmc.translatePath(__addon__.getSetting('excluded_ids_file')).decode('utf-8')
+en_add = xbmc.translatePath(__addon__.getSetting('en_add')).decode('utf-8')
 additional_m3u_file = xbmc.translatePath(__addon__.getSetting('additional_m3u_file')).decode('utf-8')
-extra_channels_file = xbmc.translatePath( os.path.join( __cwd__, 'extra_channels.json' ) ).decode('utf-8')
+#extra_channels_file = xbmc.translatePath( os.path.join( __cwd__, 'extra_channels.json' ) ).decode('utf-8')
 __data__ = xbmc.translatePath(os.path.join( __profile__, '', 'dat') ).decode('utf-8')
 __r_path__ = xbmc.translatePath(__addon__.getSetting('w_path')).decode('utf-8')
 sys.path.insert(0, __resource__)
@@ -125,23 +126,26 @@ import traceback
 try:
   import bsc
 
-  #Load IDs to be excluded
-  try:
-    with open(excluded_ids_file) as f:
-      xbmc.log("Excluded ids file: %s" % excluded_ids_file)
-      excluded_ids = f.read().splitlines()
-      xbmc.log("%s channels will be removed" % len(excluded_ids))
-  except Exception, e:
-    xbmc.log(str(e))
-    excluded_ids = []
-    
-  try:
-    with open(additional_m3u_file) as f:
-      append_m3u = unicode(f.read(), 'utf-8')
-      xbmc.log("Including channels from file: %s" % additional_m3u_file)
-  except Exception, e:
-    xbmc.log(str(e))
-    append_m3u = ''
+  #Load IDs to be excluded  
+  excluded_ids = []
+  if en_exclude:
+    try:
+      with open(excluded_ids_file) as f:
+        xbmc.log("Excluded ids file: %s" % excluded_ids_file)
+        excluded_ids = f.read().splitlines()
+        xbmc.log("%s channels will be removed" % len(excluded_ids))
+    except Exception, e:
+      xbmc.log(str(e))
+
+  append_m3u = ''
+  if en_add:
+    try:
+      with open(additional_m3u_file) as f:
+        append_m3u = unicode(f.read(), 'utf-8')
+        xbmc.log("Including channels from file: %s" % additional_m3u_file)
+    except Exception, e:
+      xbmc.log(str(e))
+
 
   b = bsc.dodat(base = __addon__.getSetting('base'),
                 login = {'usr': __addon__.getSetting('username'),
@@ -202,9 +206,8 @@ try:
         xbmc.executebuiltin('XBMC.StartPVRManager')
 
 except Exception, e:
-  Notify('Module Import', 'Fail')
+  Notify('Error', str(e))
   traceback.print_exc()
-  update('exception', str(e.args[0]), sys.exc_info())
   pass
 
 dp.close()
